@@ -1,0 +1,56 @@
+---
+description: The overall design principles of the jot project
+globs: 
+---
+
+# JOT Project Design
+
+- Consists of a single Collection, multiple Journals, and multiple Entries.
+- A "Collection" is the highest-level object and there is only ever one of them.
+- There can be many "Journals", they all reside within the Collection.
+- There can be many "Entries", they reside in a given Journal.
+- Creating a new Journal will generate a GPG key for that Journal and encrypt it.
+- All data stored in `$HOME/.jot/`.
+- Maintains a "Default" Journal, disallows Entries if there is no set Default Journal.
+
+## Collection
+
+- Contains all Journals
+- Maintains a "Default" Journal
+
+## Journal
+
+### Properties
+
+- Name :String (Unique across JOT)
+- Created :Timestamp  (Populated automatically on creation)
+- Entries :List (List of Entry)
+
+### Actions
+
+- new : Creates a new Journal
+- delete : Deletes an existing Journal
+- default : Sets a "Default" Journal
+- read : Lists all Entries in a Journal
+- describe : Shows Journal metadata (Name, Created timestamp, Number of Entries)
+
+## Entry
+
+### Properties
+
+- Created :Timestamp  (Populated automatically on creation)
+- Body  :String (Text of the journal entry)
+
+### Actions
+
+- 
+
+## Interface Examples
+- `jot journal new <name>` - Creates a new Journal
+- `jot journal delete <name>` - Deletes a Journal - Features a confirmation page
+- `jot journal default <name>` - Sets a default Journal so specifying a Journal name when creating an Entry isn't necessary.
+- `jot journal read <name>` - Lists all Entries in a Journal
+- `jot journal describe <name>` - Describe the Journal (Display created timestamp, name, number of Entries)
+
+- `jot <text entry>` - Creates an Entry in the Default Journal
+- `jot --journal <name> <text entry>` - Creates an Entry in the specified Journal, alerts user if Journal doesn't exist

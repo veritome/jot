@@ -1,0 +1,13 @@
+---
+description: Common rules for all projects
+globs: 
+---
+# Core JOT Rules
+
+- Project code is Go v1.20+
+- Use only Go standard library - Do NOT use third party packages
+- Document code using comments and explanations in 'README.dev.md'
+- Adhere to SOLID, DRY, KISS, YAGNI principles
+- Separation of concerns in different files
+- Adhere to the Principle of least privilege, if applicable
+- Keep files short and easily readable
