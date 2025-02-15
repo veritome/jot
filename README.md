@@ -1,4 +1,24 @@
-# JOT - Simple and Secure Journal Management
+# JOT
+```
+    __                                  
+   |  |                    _     
+ __|  |___ _ _ ___ ___ ___| |    
+|  |  | . | | |  _|   | .'| |    
+|_____|___|___|_| |_|_|__,|_|    
+                                 
+                                 
+ _____        _   _              
+|     |___   | |_| |_ ___        
+|  |  |   |  |  _|   | -_|       
+|_____|_|_|  |_| |_|_|___|       
+                                 
+                                 
+ _____               _         _ 
+|_   _|___ ___ _____|_|___ ___| |
+  | | | -_|  _|     | |   | .'| |
+  |_| |___|_| |_|_|_|_|_|_|__,|_|
+                                 
+```
 
 JOT is a command-line journaling tool that allows you to create and manage encrypted journals.
 
