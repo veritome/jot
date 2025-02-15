@@ -13,6 +13,7 @@ import (
 	"github.com/veritome/jot/internal/crypto"
 	"github.com/veritome/jot/internal/entry"
 	"github.com/veritome/jot/internal/journal"
+	"github.com/veritome/jot/internal/ui"
 )
 
 var journalCollection *collection.Collection
@@ -189,26 +190,9 @@ func handleJournalCommand(args []string) {
 		}
 
 		wrappedJ := journal.FromType(j)
-		entries, err := wrappedJ.GetEntries()
-		if err != nil {
-			fmt.Printf("Error reading entries: %v\n", err)
+		if err := ui.HandleShowEntries(wrappedJ); err != nil {
+			fmt.Printf("Error displaying entries: %v\n", err)
 			os.Exit(1)
-		}
-
-		if len(entries) == 0 {
-			fmt.Printf("No entries found in journal '%s'\n", args[1])
-			return
-		}
-
-		fmt.Printf("Entries in journal '%s':\n", args[1])
-		fmt.Println("------------------------")
-		for _, e := range entries {
-			content, err := e.GetDecryptedBody()
-			if err != nil {
-				fmt.Printf("Error decrypting entry %s: %v\n", e.ID, err)
-				continue
-			}
-			fmt.Printf("[%s] %s\n", e.Created.Format("2006-01-02 15:04:05"), content)
 		}
 
 	case "describe":
@@ -226,12 +210,11 @@ func handleJournalCommand(args []string) {
 		fmt.Println(wrappedJ.Describe())
 
 	case "delete-entry":
-		if len(args) != 3 {
-			fmt.Println("Usage: jot journal delete-entry <journal-name> <entry-id>")
+		if len(args) < 2 {
+			fmt.Println("Usage: jot journal delete-entry <journal-name> [entry-id]")
 			os.Exit(1)
 		}
 		journalName := args[1]
-		entryID := args[2]
 
 		j, exists := journalCollection.Journals[journalName]
 		if !exists {
@@ -240,7 +223,18 @@ func handleJournalCommand(args []string) {
 		}
 
 		wrappedJ := journal.FromType(j)
-		// Load the entry to verify it exists
+
+		// If no entry ID is provided, use interactive mode
+		if len(args) == 2 {
+			if err := ui.HandleInteractiveDelete(wrappedJ); err != nil {
+				fmt.Printf("Error in interactive delete: %v\n", err)
+				os.Exit(1)
+			}
+			return
+		}
+
+		// Otherwise, proceed with single entry deletion
+		entryID := args[2]
 		e, err := entry.Load(entryID)
 		if err != nil {
 			fmt.Printf("Error loading entry: %v\n", err)
@@ -348,4 +342,28 @@ func handleNukeCommand() {
 	}
 
 	fmt.Println("All data has been deleted and encryption keys have been regenerated.")
+}
+
+// entryItem represents a journal entry in the interactive list
+type entryItem struct {
+	id      string
+	content string
+	created string
+	marked  bool
+}
+
+func (i entryItem) Title() string {
+	mark := " "
+	if i.marked {
+		mark = "✓"
+	}
+	return fmt.Sprintf("[%s] %s", mark, i.id)
+}
+
+func (i entryItem) Description() string {
+	return fmt.Sprintf("%s | %s", i.created, i.content)
+}
+
+func (i entryItem) FilterValue() string {
+	return i.content
 }
